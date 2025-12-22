@@ -1,0 +1,291 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<title>Suarathailand Caption Generator</title>
+
+<style>
+* { box-sizing: border-box; }
+
+body {
+  font-family: Arial, sans-serif;
+  background: linear-gradient(135deg, #e3f2fd, #bbdefb);
+  padding: 40px;
+}
+
+.container {
+  max-width: 1100px;
+  margin: auto;
+  background: #ffffff;
+  border-radius: 16px;
+  padding: 24px;
+  box-shadow: 0 10px 30px rgba(0,0,0,0.08);
+}
+
+h1 {
+  text-align: center;
+  margin-bottom: 24px;
+  color: #0d47a1;
+}
+
+table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+th, td {
+  border-bottom: 1px solid #e0e0e0;
+  padding: 10px;
+  vertical-align: top;
+}
+
+th {
+  background: #e3f2fd;
+  color: #0d47a1;
+}
+
+input[type="url"],
+textarea {
+  width: 100%;
+  padding: 8px;
+  border-radius: 8px;
+  border: 1px solid #cfd8dc;
+  font-size: 14px;
+}
+
+textarea {
+  resize: vertical;
+  min-height: 80px;
+}
+
+button {
+  padding: 8px 14px;
+  border-radius: 8px;
+  border: none;
+  cursor: pointer;
+  font-size: 14px;
+  transition: all 0.2s ease;
+}
+
+.primary { background: #1976d2; color: #fff; }
+.secondary { background: #90caf9; color: #0d47a1; }
+.danger { background: #ef5350; color: #fff; }
+
+.primary:hover { background: #1565c0; transform: translateY(-2px); }
+.secondary:hover { background: #64b5f6; transform: translateY(-2px); }
+.danger:hover { background: #d32f2f; transform: translateY(-2px); }
+
+.row-actions button {
+  display: block;
+  width: 100%;
+  margin-bottom: 6px;
+}
+
+.copy-success {
+  margin-top: 6px;
+  font-size: 13px;
+  color: #2e7d32;
+  display: none;
+}
+
+.actions {
+  margin-top: 16px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+/* Progress Bar */
+.progress-wrapper {
+  margin-top: 6px;
+  height: 6px;
+  background: #e3f2fd;
+  border-radius: 6px;
+  overflow: hidden;
+  display: none;
+}
+
+.progress-bar {
+  height: 100%;
+  width: 40%;
+  background: linear-gradient(90deg, #64b5f6, #1976d2, #64b5f6);
+  animation: progressMove 1.2s infinite;
+}
+
+@keyframes progressMove {
+  0% { transform: translateX(-100%); }
+  100% { transform: translateX(250%); }
+}
+</style>
+</head>
+
+<body>
+
+<div class="container">
+  <h1>Suarathailand Caption Generator</h1>
+
+  <table id="urlTable">
+    <thead>
+      <tr>
+        <th style="width:50px;">No</th>
+        <th style="width:280px;">URL</th>
+        <th>Generated Caption</th>
+        <th style="width:190px;">Action</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td>1</td>
+        <td><input type="url" placeholder="Masukkan URL artikel"></td>
+        <td>
+          <textarea placeholder="Output akan muncul di sini"></textarea>
+
+          <div class="progress-wrapper">
+            <div class="progress-bar"></div>
+          </div>
+
+          <div class="copy-success">Teks telah dicopy</div>
+        </td>
+        <td class="row-actions">
+          <button class="secondary" onclick="generateRow(this)">Generate</button>
+          <button class="secondary" onclick="copyRow(this)">Copy</button>
+          <button class="secondary" onclick="limit350(this)">Max 350 Chars</button>
+        </td>
+      </tr>
+    </tbody>
+  </table>
+
+  <div class="actions">
+    <button class="secondary" onclick="addRow()">Tambah URL</button>
+    <div>
+      <button class="danger" onclick="resetTable()">Reset</button>
+      <button class="secondary" onclick="setAllTo350()">Set All to 350 Chars</button>
+      <button class="primary" onclick="generateAll()">Generate All</button>
+    </div>
+  </div>
+</div>
+
+<script>
+const MAX_CHARS = 350;
+
+function addRow() {
+  const tbody = document.querySelector("#urlTable tbody");
+  const rowCount = tbody.rows.length + 1;
+
+  const row = document.createElement("tr");
+  row.innerHTML = `
+    <td>${rowCount}</td>
+    <td><input type="url" placeholder="Masukkan URL artikel"></td>
+    <td>
+      <textarea placeholder="Output akan muncul di sini"></textarea>
+
+      <div class="progress-wrapper">
+        <div class="progress-bar"></div>
+      </div>
+
+      <div class="copy-success">Teks telah dicopy</div>
+    </td>
+    <td class="row-actions">
+      <button class="secondary" onclick="generateRow(this)">Generate</button>
+      <button class="secondary" onclick="copyRow(this)">Copy</button>
+      <button class="secondary" onclick="limit350(this)">Max 350 Chars</button>
+    </td>
+  `;
+  tbody.appendChild(row);
+}
+
+function resetTable() {
+  if (!confirm("Apakah kamu yakin ingin mereset tabel?\nSemua data akan dihapus.")) return;
+  document.querySelector("#urlTable tbody").innerHTML = "";
+  addRow();
+}
+
+async function generateRow(btn) {
+  const row = btn.closest("tr");
+  const input = row.querySelector("input");
+  const textarea = row.querySelector("textarea");
+  const progress = row.querySelector(".progress-wrapper");
+  const url = input.value.trim();
+
+  if (!url) return;
+
+  progress.style.display = "block";
+  textarea.value = "Memuat...";
+
+  try {
+    const proxy = "https://api.allorigins.win/raw?url=" + encodeURIComponent(url);
+    const res = await fetch(proxy);
+    const html = await res.text();
+
+    const doc = new DOMParser().parseFromString(html, "text/html");
+    const content = doc.querySelector(".entry-content");
+
+    if (!content) {
+      textarea.value = "Konten tidak ditemukan";
+      return;
+    }
+
+    const ps = content.querySelectorAll("p");
+    let text = "";
+
+    for (let p of ps) {
+      const t = p.textContent.replace(/\s+/g, " ").trim();
+      if (t) { text = t; break; }
+    }
+
+    textarea.value = text + "\n\nBaca selengkapnya: " + url;
+
+  } catch {
+    textarea.value = "Gagal mengambil artikel";
+  } finally {
+    progress.style.display = "none";
+  }
+}
+
+async function generateAll() {
+  const rows = document.querySelectorAll("#urlTable tbody tr");
+  for (let row of rows) {
+    await generateRow(row.querySelector(".row-actions button"));
+  }
+}
+
+function copyRow(btn) {
+  const row = btn.closest("tr");
+  const textarea = row.querySelector("textarea");
+  const label = row.querySelector(".copy-success");
+
+  if (!textarea.value.trim()) return;
+
+  navigator.clipboard.writeText(textarea.value).then(() => {
+    label.style.display = "block";
+  });
+}
+
+function limit350(btn) {
+  applyLimit(btn.closest("tr").querySelector("textarea"));
+}
+
+function setAllTo350() {
+  document.querySelectorAll("#urlTable textarea").forEach(textarea => {
+    applyLimit(textarea);
+  });
+}
+
+function applyLimit(textarea) {
+  const text = textarea.value;
+  if (!text || text.length <= MAX_CHARS) return;
+
+  const parts = text.split("\n\nBaca selengkapnya:");
+  if (parts.length < 2) return;
+
+  const urlPart = "\n\nBaca selengkapnya:" + parts[1];
+  const maxParagraphLength = MAX_CHARS - urlPart.length - 3;
+  if (maxParagraphLength <= 0) return;
+
+  textarea.value =
+    parts[0].substring(0, maxParagraphLength).trim() + "..." + urlPart;
+}
+</script>
+
+</body>
+</html>

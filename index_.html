@@ -1,0 +1,237 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <title>Suarathailand Content Generator</title>
+  <style>
+    :root {
+      --primary: #2563eb;
+      --primary-hover: #1d4ed8;
+      --secondary: #e5e7eb;
+      --secondary-text: #374151;
+      --background-start: #dbeafe;
+      --background-end: #eff6ff;
+      --text-main: #111827;
+      --border-soft: #d1d5db;
+      --success: #16a34a;
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: Arial, sans-serif;
+      min-height: 100vh;
+      margin: 0;
+      padding: 40px 20px;
+      background: linear-gradient(
+        135deg,
+        var(--background-start),
+        var(--background-end)
+      );
+      color: var(--text-main);
+    }
+
+    .container {
+      max-width: 600px;
+      margin: auto;
+      background: #ffffff;
+      padding: 24px;
+      border-radius: 16px;
+      box-shadow: 0 10px 25px rgba(0, 0, 0, 0.08);
+    }
+
+    h1 {
+      text-align: center;
+      margin-bottom: 24px;
+      font-size: 22px;
+    }
+
+    .input-row {
+      display: flex;
+      gap: 10px;
+      margin-bottom: 12px;
+    }
+
+    .input-row input {
+      flex: 1;
+      padding: 12px 14px;
+      border-radius: 10px;
+      border: 1px solid var(--border-soft);
+      font-size: 14px;
+      outline: none;
+    }
+
+    .input-row input:focus {
+      border-color: var(--primary);
+    }
+
+    .btn-primary {
+      padding: 12px 18px;
+      border-radius: 10px;
+      border: none;
+      background: var(--primary);
+      color: #ffffff;
+      font-size: 14px;
+      cursor: pointer;
+      transition: background 0.2s ease;
+      white-space: nowrap;
+    }
+
+    .btn-primary:hover {
+      background: var(--primary-hover);
+    }
+
+    textarea {
+      width: 100%;
+      height: 180px;
+      margin-top: 12px;
+      padding: 14px;
+      border-radius: 12px;
+      border: 1px solid var(--border-soft);
+      font-size: 14px;
+      resize: vertical;
+      outline: none;
+    }
+
+    textarea:focus {
+      border-color: var(--primary);
+    }
+
+    .btn-secondary {
+      margin-top: 14px;
+      width: 100%;
+      padding: 12px;
+      border-radius: 12px;
+      border: none;
+      background: var(--secondary);
+      color: var(--secondary-text);
+      font-size: 14px;
+      cursor: pointer;
+      transition: background 0.2s ease;
+    }
+
+    .btn-secondary:hover {
+      background: #d1d5db;
+    }
+
+    .success-label {
+      margin-top: 8px;
+      font-size: 14px;
+      color: var(--success);
+      display: none;
+      text-align: center;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>Suarathailand Content Generator</h1>
+
+    <div class="input-row">
+      <input
+        type="url"
+        id="urlInput"
+        placeholder="Masukkan URL artikel"
+      >
+      <button class="btn-primary" onclick="generate()">
+        Generate
+      </button>
+    </div>
+
+    <textarea
+      id="output"
+      placeholder="Hasil akan muncul di sini..."
+    ></textarea>
+
+    <button class="btn-secondary" onclick="copyText()">
+      Copy Text
+    </button>
+
+    <div id="copySuccess" class="success-label">
+      teks telah dicopy
+    </div>
+  </div>
+
+  <script>
+    const urlInput = document.getElementById("urlInput");
+    const output = document.getElementById("output");
+    const copySuccess = document.getElementById("copySuccess");
+    let hideSuccessTimeout;
+
+    urlInput.addEventListener("keydown", function (e) {
+      if (e.key === "Enter") {
+        e.preventDefault();
+        generate();
+      }
+    });
+
+    async function generate() {
+      const url = urlInput.value.trim();
+      if (!url) return;
+
+      output.value = "Memuat...";
+
+      try {
+        const proxyUrl =
+          "https://api.allorigins.win/raw?url=" +
+          encodeURIComponent(url);
+
+        const response = await fetch(proxyUrl);
+        const html = await response.text();
+
+        const parser = new DOMParser();
+        const doc = parser.parseFromString(html, "text/html");
+
+        const entryContent = doc.querySelector(".entry-content");
+        if (!entryContent) {
+          output.value = "Konten artikel tidak ditemukan";
+          return;
+        }
+
+        const paragraphs = entryContent.querySelectorAll("p");
+        let firstValidParagraph = "";
+
+        for (let p of paragraphs) {
+          const text = p.textContent.replace(/\s+/g, " ").trim();
+          if (text.length > 0) {
+            firstValidParagraph = text;
+            break;
+          }
+        }
+
+        if (!firstValidParagraph) {
+          output.value = "Paragraf valid tidak ditemukan";
+          return;
+        }
+
+        output.value =
+          firstValidParagraph +
+          "\n\nBaca selengkapnya: " +
+          url;
+
+      } catch {
+        output.value = "Gagal mengambil konten artikel";
+      }
+    }
+
+    function copyText() {
+      if (!output.value.trim()) return;
+
+      navigator.clipboard.writeText(output.value).then(() => {
+        showCopySuccess();
+      });
+    }
+
+    function showCopySuccess() {
+      clearTimeout(hideSuccessTimeout);
+      copySuccess.style.display = "block";
+
+      hideSuccessTimeout = setTimeout(() => {
+        copySuccess.style.display = "none";
+      }, 5000);
+    }
+  </script>
+</body>
+</html>
