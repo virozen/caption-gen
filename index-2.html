@@ -1,0 +1,301 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8" />
+<title>Suarathailand Content Generator</title>
+
+<style>
+* {
+  box-sizing: border-box;
+  font-family: Arial, sans-serif;
+}
+
+body {
+  background: linear-gradient(135deg, #0f4c81, #1e88e5);
+  padding: 30px;
+  color: #333;
+}
+
+.card {
+  background: #fff;
+  border-radius: 16px;
+  padding: 20px;
+  max-width: 1200px;
+  margin: auto;
+  box-shadow: 0 15px 30px rgba(0,0,0,0.15);
+}
+
+h1 {
+  margin-bottom: 20px;
+  color: #0f4c81;
+}
+
+table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+th, td {
+  padding: 10px;
+  vertical-align: top;
+}
+
+th {
+  background: #f3f6fa;
+  text-align: left;
+}
+
+input, textarea {
+  width: 100%;
+  padding: 8px;
+  border-radius: 8px;
+  border: 1px solid #ccc;
+}
+
+textarea {
+  min-height: 100px;
+  resize: vertical;
+}
+
+button {
+  padding: 8px 12px;
+  border-radius: 8px;
+  border: none;
+  cursor: pointer;
+  transition: 0.2s;
+}
+
+button:hover {
+  opacity: 0.85;
+}
+
+.btn-primary {
+  background: #1e88e5;
+  color: #fff;
+}
+
+.btn-secondary {
+  background: #e0e0e0;
+}
+
+.btn-success {
+  background: #4caf50;
+  color: #fff;
+}
+
+.actions button {
+  display: block;
+  width: 100%;
+  margin-bottom: 6px;
+}
+
+.preview-img {
+  width: 200px;
+  border-radius: 12px;
+  border: 1px solid #ddd;
+}
+
+.success-label {
+  color: green;
+  font-size: 12px;
+  margin-top: 4px;
+}
+
+.footer-actions {
+  display: flex;
+  justify-content: space-between;
+  margin-top: 20px;
+}
+</style>
+</head>
+
+<body>
+
+<div class="card">
+  <h1>Suarathailand Content Generator</h1>
+
+  <table id="table">
+    <thead>
+      <tr>
+        <th>No</th>
+        <th>URL</th>
+        <th>Generated Image</th>
+        <th>Caption</th>
+        <th>Action</th>
+      </tr>
+    </thead>
+    <tbody></tbody>
+  </table>
+
+  <button onclick="addRow()" class="btn-secondary" style="margin-top:10px;">
+    + Tambah URL
+  </button>
+
+  <div class="footer-actions">
+    <button class="btn-secondary" onclick="resetTable()">Reset</button>
+    <div>
+      <button class="btn-secondary" onclick="setAllLimit()">Set all to 350 chars</button>
+      <button class="btn-primary" onclick="generateAll()">Generate All</button>
+    </div>
+  </div>
+</div>
+
+<script>
+const TEMPLATE_IMAGE =
+  "https://dummyimage.com/1080x1080/0f4c81/ffffff.png&text=SOCIAL+TEMPLATE";
+
+const CORS = "https://api.allorigins.win/raw?url=";
+let limitChars = 350;
+
+function addRow() {
+  const tbody = document.querySelector("#table tbody");
+  const row = tbody.insertRow();
+
+  row.innerHTML = `
+    <td>${tbody.rows.length}</td>
+    <td><input placeholder="https://suarathailand.com/..." /></td>
+    <td><img class="preview-img" /></td>
+    <td>
+      <textarea></textarea>
+      <div class="success-label" style="display:none">Teks telah dicopy</div>
+    </td>
+    <td class="actions">
+      <button class="btn-primary" onclick="generateRow(this)">Generate</button>
+      <button class="btn-secondary" onclick="limitText(this)">Max 350 chars</button>
+      <button class="btn-success" onclick="copyText(this)">Copy</button>
+    </td>
+  `;
+}
+
+addRow();
+
+async function generateRow(btn) {
+  const row = btn.closest("tr");
+  const url = row.querySelector("input").value;
+  if (!url) return;
+
+  const html = await fetch(CORS + encodeURIComponent(url)).then(r => r.text());
+  const doc = new DOMParser().parseFromString(html, "text/html");
+
+  const title =
+    doc.querySelector("h1.entry-title")?.innerText.trim() || "";
+
+  const imgSrc =
+    doc.querySelector(".post-thumb img")?.getAttribute("src") || "";
+
+  const paragraphs = doc.querySelectorAll(".entry-content p");
+  let paragraph = "";
+  for (let p of paragraphs) {
+    const text = p.innerText.trim();
+    if (text) {
+      paragraph = text;
+      break;
+    }
+  }
+
+  const caption =
+    paragraph + "\nBaca selengkapnya: " + url;
+
+  row.querySelector("textarea").value = caption;
+
+  await generateImage(title, imgSrc, row.querySelector("img"));
+}
+
+async function generateAll() {
+  const rows = document.querySelectorAll("#table tbody tr");
+  for (let row of rows) {
+    await generateRow(row.querySelector(".btn-primary"));
+  }
+}
+
+function limitText(btn) {
+  const textarea = btn.closest("tr").querySelector("textarea");
+  if (textarea.value.length <= limitChars) return;
+  textarea.value =
+    textarea.value.substring(0, limitChars - 3).trim() + "...";
+}
+
+function setAllLimit() {
+  document.querySelectorAll("textarea").forEach(t => {
+    if (t.value.length > limitChars) {
+      t.value = t.value.substring(0, limitChars - 3).trim() + "...";
+    }
+  });
+}
+
+function copyText(btn) {
+  const row = btn.closest("tr");
+  const textarea = row.querySelector("textarea");
+  navigator.clipboard.writeText(textarea.value);
+  const label = row.querySelector(".success-label");
+  label.style.display = "block";
+}
+
+function resetTable() {
+  if (!confirm("Yakin ingin reset semua data?")) return;
+  document.querySelector("#table tbody").innerHTML = "";
+  addRow();
+}
+
+async function generateImage(title, imageUrl, imgEl) {
+  const canvas = document.createElement("canvas");
+  canvas.width = 1080;
+  canvas.height = 1080;
+  const ctx = canvas.getContext("2d");
+
+  const bg = await loadImage(TEMPLATE_IMAGE);
+  ctx.drawImage(bg, 0, 0, 1080, 1080);
+
+  if (imageUrl) {
+    const img = await loadImage(imageUrl);
+    drawCover(ctx, img, 140, 220, 800, 450);
+  }
+
+  ctx.fillStyle = "#0f4c81";
+  ctx.font = "bold 48px Arial";
+  wrapText(ctx, title, 140, 720, 800, 56, 3);
+
+  imgEl.src = canvas.toDataURL("image/png");
+}
+
+function drawCover(ctx, img, x, y, w, h) {
+  const r = Math.max(w / img.width, h / img.height);
+  const nw = img.width * r;
+  const nh = img.height * r;
+  ctx.drawImage(img, x - (nw - w) / 2, y - (nh - h) / 2, nw, nh);
+}
+
+function wrapText(ctx, text, x, y, maxWidth, lineHeight, maxLines) {
+  const words = text.split(" ");
+  let line = "";
+  let lines = [];
+  for (let word of words) {
+    const test = line + word + " ";
+    if (ctx.measureText(test).width > maxWidth) {
+      lines.push(line);
+      line = word + " ";
+    } else line = test;
+  }
+  lines.push(line);
+
+  lines = lines.slice(0, maxLines);
+  if (lines.length === maxLines) {
+    lines[maxLines - 1] = lines[maxLines - 1].trim() + "...";
+  }
+
+  lines.forEach((l, i) => ctx.fillText(l, x, y + i * lineHeight));
+}
+
+function loadImage(src) {
+  return new Promise((res, rej) => {
+    const img = new Image();
+    img.crossOrigin = "anonymous";
+    img.onload = () => res(img);
+    img.onerror = rej;
+    img.src = src;
+  });
+}
+</script>
+
+</body>
+</html>
