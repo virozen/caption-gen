@@ -29,7 +29,7 @@ body{
 }
 
 .container{
-  max-width:1400px;
+  width: 96%;
   margin:auto;
   background:#fff;
   padding:28px;
@@ -236,7 +236,7 @@ function addRow(){
 </td>
 <td class="actions-col">
   <button class="primary" onclick="generateRow(this)">Generate</button>
-  <button class="secondary" onclick="limitText(this)">Max 350 Chars</button>
+  <button class="secondary" onclick="limitText(this)">Set to 350 chars</button>
 </td>`;
   document.getElementById("tbody").appendChild(tr);
 }
