@@ -1,362 +1,421 @@
 <!DOCTYPE html>
 <html lang="id">
 <head>
-<meta charset="UTF-8">
-<title>Suarathailand Content Generator</title>
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Suarathailand Generator Pro</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --primary: #2563eb;
+            --primary-dark: #1e40af;
+            --bg-soft: #f0f7ff;
+            --text-main: #1e293b;
+            --text-light: #64748b;
+            --white: #ffffff;
+            --accent: #e2e8f0;
+            --success: #10b981;
+            --warning: #f59e0b;
+            --danger: #ef4444;
+        }
 
-<style>
-:root{
-  --primary:#2563eb;
-  --primary-dark:#1e40af;
-  --secondary:#e5e7eb;
-  --bg:#f4f8ff;
-  --border:#e2e8f0;
-  --text:#1f2937;
-  --muted:#6b7280;
-}
+        body { 
+            font-family: 'Poppins', sans-serif; 
+            margin: 0; 
+            padding: 40px 20px; 
+            background-color: var(--bg-soft); 
+            color: var(--text-main);
+        }
 
-*{
-  box-sizing:border-box;
-  font-family:Inter,system-ui,-apple-system,BlinkMacSystemFont,sans-serif;
-}
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
 
-body{
-  margin:0;
-  padding:32px;
-  background:linear-gradient(135deg,#eef4ff,#dbeafe);
-  color:var(--text);
-}
+        h1 { 
+            text-align: center; 
+            color: var(--primary-dark); 
+            font-weight: 700; 
+            margin-bottom: 40px;
+            letter-spacing: -0.5px;
+        }
 
-.container{
-  width: 96%;
-  margin:auto;
-  background:#fff;
-  padding:28px;
-  border-radius:16px;
-  box-shadow:0 15px 40px rgba(0,0,0,.08);
-}
+        /* Table Styling */
+        .table-wrapper {
+            background: var(--white);
+            border-radius: 16px;
+            box-shadow: 0 10px 25px rgba(37, 99, 235, 0.1);
+            overflow: hidden;
+            border: 1px solid var(--accent);
+        }
 
-h1{
-  margin:0 0 24px;
-  font-size:24px;
-  font-weight:700;
-  color:#1e3a8a;
-}
+        table { width: 100%; border-collapse: collapse; }
+        
+        th { 
+            background-color: var(--primary); 
+            color: var(--white); 
+            font-weight: 500; 
+            text-align: left; 
+            padding: 18px 15px;
+            font-size: 14px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
 
-table{
-  width:100%;
-  border-collapse:separate;
-  border-spacing:0;
-  font-size:14px;
-}
+        td { 
+            padding: 20px 15px; 
+            border-bottom: 1px solid var(--accent);
+            vertical-align: top; 
+        }
 
-thead th{
-  position:sticky;
-  top:0;
-  background:#f8fbff;
-  z-index:1;
-}
+        tr:last-child td { border-bottom: none; }
 
-th,td{
-  padding:14px 12px;
-  border-bottom:1px solid var(--border);
-  vertical-align:top;
-}
+        /* Input & Textarea */
+        input[type="text"], textarea { 
+            width: 100%; 
+            padding: 12px 15px; 
+            border: 1.5px solid var(--accent); 
+            border-radius: 10px; 
+            font-family: inherit;
+            font-size: 13px;
+            transition: all 0.3s ease;
+            box-sizing: border-box;
+            background: #fafafa;
+        }
 
-th{
-  text-align:left;
-  font-weight:600;
-  color:#1e40af;
-}
+        input[type="text"]:focus, textarea:focus {
+            outline: none;
+            border-color: var(--primary);
+            background: var(--white);
+            box-shadow: 0 0 0 4px rgba(37, 99, 235, 0.1);
+        }
 
-tbody tr:hover{
-  background:#f9fbff;
-}
+        textarea { height: 120px; resize: vertical; line-height: 1.6; }
 
-input,textarea{
-  width:100%;
-  padding:10px 12px;
-  border-radius:10px;
-  border:1px solid #c7d2fe;
-  font-size:13px;
-}
+        /* Preview Box */
+        .canvas-preview { 
+            width: 180px; 
+            height: 225px; 
+            border-radius: 12px; 
+            cursor: pointer; 
+            margin: 0 auto; 
+            background: var(--bg-soft); 
+            object-fit: contain; 
+            border: 1px solid var(--accent);
+            transition: transform 0.3s ease;
+        }
+        .canvas-preview:hover { transform: scale(1.02); }
 
-input:focus,textarea:focus{
-  outline:none;
-  border-color:var(--primary);
-  box-shadow:0 0 0 2px rgba(37,99,235,.15);
-}
+        .preview-placeholder {
+            width: 180px; height: 225px;
+            display: flex; align-items: center; justify-content: center;
+            font-size: 11px; color: var(--text-light);
+            border: 2px dashed var(--accent); border-radius: 12px; margin: 0 auto;
+        }
 
-textarea{
-  resize:vertical;
-  min-height:110px;
-}
+        /* Buttons */
+        .btn-group { margin-top: 30px; display: flex; justify-content: space-between; align-items: center; }
+        
+        button { 
+            cursor: pointer; 
+            padding: 10px 20px; 
+            border: none; 
+            border-radius: 10px; 
+            font-weight: 600; 
+            font-family: 'Poppins'; 
+            transition: all 0.2s ease;
+            font-size: 13px;
+        }
 
-button{
-  padding:8px 14px;
-  border-radius:10px;
-  border:none;
-  font-size:13px;
-  font-weight:600;
-  cursor:pointer;
-  transition:.2s;
-}
+        button:active { transform: scale(0.98); }
 
-.primary{
-  background:var(--primary);
-  color:#fff;
-}
-.primary:hover{background:var(--primary-dark)}
+        .btn-gen { background: var(--primary); color: white; width: 100%; margin-bottom: 8px; }
+        .btn-gen:hover { background: var(--primary-dark); }
+        .btn-gen:disabled { background: var(--accent); color: var(--text-light); }
 
-.secondary{
-  background:var(--secondary);
-  color:#111827;
-}
-.secondary:hover{background:#d1d5db}
+        .btn-350 { background: var(--white); color: var(--primary); border: 1.5px solid var(--primary); width: 100%; margin-bottom: 8px; }
+        .btn-350:hover { background: var(--bg-soft); }
 
-.actions-col{
-  min-width:150px;
-}
+        .btn-add { background: var(--primary); color: white; padding: 14px 28px; box-shadow: 0 4px 12px rgba(37, 99, 235, 0.2); }
+        .btn-reset { background: transparent; color: var(--danger); }
+        .btn-reset:hover { background: #fff1f2; }
 
-.actions-col button{
-  width:100%;
-  margin-bottom:8px;
-}
+        .btn-all { background: var(--text-main); color: white; }
+        .btn-copy { background: var(--bg-soft); color: var(--primary); width: 100%; margin-top: 8px; font-size: 11px; }
 
-.thumb{
-  max-width:150px;
-  border-radius:10px;
-  display:none;
-}
+        /* Statuses */
+        .progress-container { width: 180px; height: 6px; background-color: var(--accent); border-radius: 10px; margin: 12px auto; display: none; overflow: hidden; }
+        .progress-bar { width: 0%; height: 100%; background-color: var(--primary); transition: width 0.3s; }
+        
+        .error-label { display: none; color: var(--danger); font-size: 10px; font-weight: 500; margin-top: 8px; text-align: center; padding: 6px; border-radius: 8px; background: #fef2f2; }
+        .char-info { font-size: 11px; color: var(--text-light); margin-top: 6px; font-weight: 500; }
 
-.no-image{
-  font-size:12px;
-  color:var(--muted);
-}
-
-.success{
-  font-size:12px;
-  color:#15803d;
-  margin-top:6px;
-  display:none;
-}
-
-.progress{
-  height:6px;
-  background:#e5e7eb;
-  border-radius:6px;
-  overflow:hidden;
-  margin-top:8px;
-  display:none;
-}
-
-.progress span{
-  display:block;
-  height:100%;
-  width:0%;
-  background:linear-gradient(90deg,#2563eb,#60a5fa);
-  animation:load 1.4s infinite;
-}
-
-@keyframes load{
-  from{width:0%}to{width:100%}
-}
-
-.toolbar{
-  display:flex;
-  justify-content:space-between;
-  align-items:center;
-  margin-top:20px;
-}
-
-.toolbar-left button{
-  margin-right:10px;
-}
-
-.toolbar-right button{
-  margin-left:10px;
-}
-</style>
+        canvas { display: none; }
+    </style>
 </head>
-
 <body>
-<div class="container">
-<h1>Suarathailand Content Generator</h1>
 
-<table>
-<thead>
-<tr>
-<th width="50">No</th>
-<th width="260">URL</th>
-<th width="240">Judul</th>
-<th width="180">Gambar</th>
-<th>Generated Caption</th>
-<th width="160">Action</th>
-</tr>
-</thead>
-<tbody id="tbody"></tbody>
-</table>
+    <div class="container">
+        <h1>ST Content Generator</h1>
 
-<div class="toolbar">
-  <div class="toolbar-left">
-    <button class="secondary" onclick="addRow()">Tambah URL</button>
-  </div>
-  <div class="toolbar-right">
-    <button class="secondary" onclick="resetTable()">Reset</button>
-    <button class="secondary" onclick="setAllLimit()">Set all to 350 chars</button>
-    <button class="primary" onclick="generateAll()">Generate All</button>
-  </div>
-</div>
-</div>
+        <div class="table-wrapper">
+            <table id="contentTable">
+                <thead>
+                    <tr>
+                        <th style="width: 50px; text-align: center;">#</th>
+                        <th style="width: 25%;">URL Berita</th>
+                        <th style="width: 220px; text-align: center;">Visual Preview</th>
+                        <th>Caption Content</th>
+                        <th style="width: 170px;">Control</th>
+                    </tr>
+                </thead>
+                <tbody></tbody>
+            </table>
+        </div>
 
-<script>
-let no=0;
+        <div class="btn-group">
+            <button class="btn-add" onclick="addRow()">+ Tambah URL Baru</button>
+            <div style="display: flex; gap: 12px;">
+                <button class="btn-reset" onclick="resetTable()">Reset Data</button>
+                <button class="btn-all" onclick="setAllTo350()">Set all to 350 chars</button>
+                <button class="btn-all" style="background: var(--success)" onclick="generateAll()">Generate All</button>
+            </div>
+        </div>
+    </div>
 
-function addRow(){
-  no++;
-  const tr=document.createElement("tr");
-  tr.innerHTML=`
-<td>${no}</td>
-<td><input type="url" placeholder="https://suarathailand.com/..."></td>
-<td>
-  <textarea class="title-text"></textarea>
-  <button class="secondary" onclick="copyText(this)">Copy Judul</button>
-  <div class="success">Teks telah dicopy</div>
-</td>
-<td>
-  <img class="thumb">
-  <div class="no-image">Tidak ada gambar</div>
-</td>
-<td>
-  <textarea class="caption-text"></textarea>
-  <button class="secondary" onclick="copyText(this)">Copy Caption</button>
-  <div class="success">Teks telah dicopy</div>
-  <div class="progress"><span></span></div>
-</td>
-<td class="actions-col">
-  <button class="primary" onclick="generateRow(this)">Generate</button>
-  <button class="secondary" onclick="limitText(this)">Set to 350 chars</button>
-</td>`;
-  document.getElementById("tbody").appendChild(tr);
-}
+    <script>
+        let rowCount = 0;
+        const BASE_DOMAIN = "https://suarathailand.com";
+        const TEMPLATE_URL = "template.png"; 
+        let cachedTemplate = null;
 
-async function generateRow(btn){
-  const row=btn.closest("tr");
-  const url=row.querySelector('input[type=url]').value;
-  if(!url) return;
+        window.onload = async () => {
+            cachedTemplate = new Image();
+            cachedTemplate.crossOrigin = "anonymous";
+            cachedTemplate.src = TEMPLATE_URL;
+            await document.fonts.ready;
+            addRow();
+        };
 
-  const title=row.querySelector(".title-text");
-  const caption=row.querySelector(".caption-text");
-  const img=row.querySelector(".thumb");
-  const noImg=row.querySelector(".no-image");
-  const progress=row.querySelector(".progress");
+        function addRow() {
+            rowCount++;
+            const tbody = document.querySelector("#contentTable tbody");
+            const row = document.createElement("tr");
+            row.id = `row-${rowCount}`;
+            row.innerHTML = `
+                <td style="text-align: center; color: var(--text-light); font-weight: 600;">${rowCount}</td>
+                <td><input type="text" class="input-url" placeholder="Paste link di sini..."></td>
+                <td style="text-align: center;">
+                    <div id="preview-box-${rowCount}">
+                        <div class="preview-placeholder">Menunggu URL...</div>
+                    </div>
+                    <div class="progress-container" id="prog-cont-${rowCount}">
+                        <div class="progress-bar" id="prog-bar-${rowCount}"></div>
+                    </div>
+                    <div class="error-label" id="error-${rowCount}">⚠️ Gagal memproses gambar</div>
+                    <canvas id="canvas-${rowCount}" width="1080" height="1350"></canvas>
+                </td>
+                <td>
+                    <textarea class="res-caption" placeholder="Caption otomatis muncul di sini..." oninput="updateCharCount(${rowCount})"></textarea>
+                    <div class="char-info" id="char-info-${rowCount}">0 karakter</div>
+                    <button class="btn-copy" onclick="copyText(this)">Salin Teks</button>
+                </td>
+                <td>
+                    <button class="btn-gen" id="btn-gen-${rowCount}" onclick="generateRow(${rowCount})">Generate</button>
+                    <button class="btn-350" onclick="limitTo350(${rowCount})">Set to 350 chars</button>
+                    <button id="dl-${rowCount}" style="display:none; background: var(--primary); color:white; width:100%; font-size:11px; padding:8px; border-radius:8px;" onclick="downloadImage(${rowCount})">Unduh JPG</button>
+                </td>
+            `;
+            tbody.appendChild(row);
+        }
 
-  progress.style.display="block";
+        async function generateRow(id) {
+            const row = document.getElementById(`row-${id}`);
+            const urlInput = row.querySelector(".input-url").value.trim();
+            const btn = document.getElementById(`btn-gen-${id}`);
+            const progBar = document.getElementById(`prog-bar-${id}`);
+            const progCont = document.getElementById(`prog-cont-${id}`);
+            const errLabel = document.getElementById(`error-${id}`);
 
-  try{
-    const res=await fetch("https://api.allorigins.win/raw?url="+encodeURIComponent(url));
-    const html=await res.text();
-    const doc=new DOMParser().parseFromString(html,"text/html");
+            if (!urlInput) return;
 
-    const h1=doc.querySelector("h1.entry-title");
-    title.value=h1?h1.textContent.trim():"";
+            btn.innerText = "Processing...";
+            btn.disabled = true;
+            errLabel.style.display = "none";
+            progCont.style.display = "block";
+            progBar.style.width = "20%";
 
-    const imgEl=doc.querySelector(".post-thumb img");
-    if(imgEl){
-      const raw=imgEl.getAttribute("src");
-      const finalSrc=resolveImageUrl(raw,url);
-      img.src=finalSrc;
-      img.style.display="block";
-      noImg.style.display="none";
-    }else{
-      img.style.display="none";
-      noImg.style.display="block";
-    }
+            try {
+                const response = await fetch(`https://api.allorigins.win/get?url=${encodeURIComponent(urlInput)}`);
+                const data = await response.json();
+                progBar.style.width = "50%";
 
-    const ps=doc.querySelectorAll(".entry-content p");
-    let text="";
-    for(let p of ps){
-      const t=p.textContent.trim();
-      if(t){text=t;break;}
-    }
-    caption.value=text+"\n\nBaca selengkapnya: "+url;
+                const parser = new DOMParser();
+                const doc = parser.parseFromString(data.contents, "text/html");
+                const title = doc.querySelector("h1.entry-title")?.innerText || doc.title;
+                
+                const imgTag = doc.querySelector(".post-thumb img") || doc.querySelector(".entry-content img") || doc.querySelector("meta[property='og:image']");
+                let imgSrc = "";
+                if (imgTag) {
+                    imgSrc = imgTag.getAttribute('src') || imgTag.getAttribute('content') || imgTag.getAttribute('data-src');
+                }
+                
+                if (imgSrc && !imgSrc.startsWith('http')) {
+                    imgSrc = BASE_DOMAIN + (imgSrc.startsWith('/') ? '' : '/') + imgSrc;
+                }
 
-  }catch{
-    caption.value="Gagal mengambil konten";
-  }finally{
-    progress.style.display="none";
-  }
-}
+                const paragraphs = Array.from(doc.querySelectorAll(".entry-content p"));
+                let firstP = "";
+                for (let p of paragraphs) {
+                    if (p.innerText.trim().length > 30) {
+                        firstP = p.innerText.trim();
+                        break;
+                    }
+                }
 
-function generateAll(){
-  document.querySelectorAll(".actions-col .primary")
-    .forEach(b=>generateRow(b));
-}
+                const ta = row.querySelector(".res-caption");
+                ta.dataset.original = firstP;
+                ta.value = `${firstP}\n\nBaca selanjutnya: ${urlInput}`;
+                updateCharCount(id);
 
-function resolveImageUrl(src,pageUrl){
-  if(!src) return "";
-  if(src.startsWith("http")) return src;
-  return new URL(pageUrl).origin+src;
-}
+                if (imgSrc) {
+                    progBar.style.width = "75%";
+                    const success = await drawCanvas(id, title, imgSrc);
+                    if (!success) {
+                        errLabel.style.display = "block";
+                        errLabel.innerText = "⚠️ Proxy Gambar Gagal";
+                    } else {
+                        document.getElementById(`dl-${id}`).style.display = "block";
+                    }
+                } else {
+                    errLabel.style.display = "block";
+                    errLabel.innerText = "⚠️ Gambar tidak ditemukan";
+                }
+                progBar.style.width = "100%";
 
-function copyText(btn){
-  const input=btn.previousElementSibling;
-  input.select();
-  document.execCommand("copy");
-  btn.nextElementSibling.style.display="block";
-}
+            } catch (error) {
+                errLabel.style.display = "block";
+                errLabel.innerText = "⚠️ Koneksi Error";
+                console.error(error);
+            } finally {
+                btn.innerText = "Generate";
+                btn.disabled = false;
+                setTimeout(() => { progCont.style.display = "none"; progBar.style.width = "0%"; }, 800);
+            }
+        }
 
-function limitText(btn){
-  const row = btn.closest("tr");
-  const ta = row.querySelector(".caption-text");
-  if(!ta || !ta.value) return;
+        function drawCanvas(id, title, imgSrc) {
+            return new Promise((resolve) => {
+                const canvas = document.getElementById(`canvas-${id}`);
+                const ctx = canvas.getContext("2d");
+                const newsImg = new Image();
+                newsImg.crossOrigin = "anonymous";
+                newsImg.src = `https://images.weserv.nl/?url=${encodeURIComponent(imgSrc)}`;
 
-  const parts = ta.value.split("\n\nBaca selengkapnya:");
-  if(parts.length < 2) return;
+                newsImg.onload = () => {
+                    ctx.clearRect(0, 0, canvas.width, canvas.height);
+                    ctx.drawImage(cachedTemplate, 0, 0, 1080, 1350);
+                    
+                    const tx = 75, ty = 430, tw = 930, th = 680;
+                    const imgRatio = newsImg.width / newsImg.height;
+                    const targetRatio = tw / th;
+                    let sx, sy, sw, sh;
 
-  let paragraph = parts[0].trim();
-  const urlPart = "\n\nBaca selengkapnya:" + parts[1];
+                    if (imgRatio > targetRatio) {
+                        sh = newsImg.height;
+                        sw = sh * targetRatio;
+                        sx = (newsImg.width - sw) / 2;
+                        sy = 0;
+                    } else {
+                        sw = newsImg.width;
+                        sh = sw / targetRatio;
+                        sx = 0;
+                        sy = (newsImg.height - sh) / 2;
+                    }
 
-  const maxTotal = 350;
-  const allowedParagraphLength = maxTotal - urlPart.length - 3;
+                    ctx.drawImage(newsImg, sx, sy, sw, sh, tx, ty, tw, th);
+                    ctx.fillStyle = "#1a3a5f"; 
+                    ctx.font = "600 54px Poppins";
+                    wrapText(ctx, title, 75, 220, 930, 75);
+                    
+                    const previewBox = document.getElementById(`preview-box-${id}`);
+                    previewBox.innerHTML = `<img src="${canvas.toDataURL('image/jpeg', 0.9)}" class="canvas-preview" onclick="downloadImage(${id})">`;
+                    resolve(true);
+                };
+                newsImg.onerror = () => resolve(false);
+            });
+        }
 
-  if(paragraph.length > allowedParagraphLength){
-    paragraph = paragraph.slice(0, allowedParagraphLength) + "...";
-    ta.value = paragraph + urlPart;
-  }
-}
+        function wrapText(ctx, text, x, y, maxWidth, lineHeight) {
+            const words = text.split(' ');
+            let line = '';
+            for(let n = 0; n < words.length; n++) {
+                let testLine = line + words[n] + ' ';
+                if (ctx.measureText(testLine).width > maxWidth && n > 0) {
+                    ctx.fillText(line, x, y);
+                    line = words[n] + ' ';
+                    y += lineHeight;
+                } else { line = testLine; }
+            }
+            ctx.fillText(line, x, y);
+        }
 
+        function limitTo350(id) {
+            const row = document.getElementById(`row-${id}`);
+            const urlInput = row.querySelector(".input-url").value.trim();
+            const ta = row.querySelector(".res-caption");
+            const footer = `\n\nBaca selanjutnya: ${urlInput}`;
+            let body = ta.dataset.original || ta.value.split("\n\nBaca selanjutnya:")[0];
+            
+            if ((body.length + footer.length) > 350) {
+                const allowed = 350 - footer.length - 3;
+                body = body.substring(0, Math.max(0, allowed)).trim() + "...";
+            }
+            ta.value = body + footer;
+            updateCharCount(id);
+        }
 
-function setAllLimit(){
-  document.querySelectorAll(".caption-text").forEach(ta=>{
-    if(!ta.value) return;
+        function updateCharCount(id) {
+            const ta = document.querySelector(`#row-${id} .res-caption`);
+            const info = document.getElementById(`char-info-${id}`);
+            if(!ta || !info) return;
+            info.innerText = `${ta.value.length} karakter`;
+            info.style.color = ta.value.length > 350 ? "var(--danger)" : "var(--text-light)";
+        }
 
-    const parts = ta.value.split("\n\nBaca selengkapnya:");
-    if(parts.length < 2) return;
+        function setAllTo350() {
+            for(let i=1; i<=rowCount; i++) {
+                const r = document.getElementById(`row-${i}`);
+                if(r) limitTo350(i);
+            }
+        }
 
-    let paragraph = parts[0].trim();
-    const urlPart = "\n\nBaca selengkapnya:" + parts[1];
+        function copyText(btn) {
+            const ta = btn.previousElementSibling.previousElementSibling;
+            ta.select();
+            document.execCommand("copy");
+            btn.innerText = "✓ Tersalin";
+            setTimeout(() => btn.innerText = "Salin Teks", 1500);
+        }
 
-    const maxTotal = 350;
-    const allowedParagraphLength = maxTotal - urlPart.length - 3;
+        function downloadImage(id) {
+            const canvas = document.getElementById(`canvas-${id}`);
+            const link = document.createElement('a');
+            link.download = `ST_Post_${id}.jpg`;
+            link.href = canvas.toDataURL('image/jpeg', 0.95);
+            link.click();
+        }
 
-    if(paragraph.length > allowedParagraphLength){
-      paragraph = paragraph.slice(0, allowedParagraphLength) + "...";
-      ta.value = paragraph + urlPart;
-    }
-  });
-}
+        function resetTable() { if(confirm("Hapus semua data?")) location.reload(); }
 
-
-function resetTable(){
-  if(!confirm("Yakin ingin reset semua data?")) return;
-  document.getElementById("tbody").innerHTML="";
-  no=0;
-  addRow();
-}
-
-addRow();
-</script>
+        async function generateAll() {
+            const rows = document.querySelectorAll("tbody tr");
+            for(let row of rows) {
+                const id = row.id.split('-')[1];
+                const input = row.querySelector(".input-url");
+                if(input && input.value.trim()) await generateRow(id);
+            }
+        }
+    </script>
 </body>
 </html>

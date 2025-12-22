@@ -1,0 +1,362 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<title>Suarathailand Content Generator</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<style>
+:root{
+  --primary:#2563eb;
+  --primary-dark:#1e40af;
+  --secondary:#e5e7eb;
+  --bg:#f4f8ff;
+  --border:#e2e8f0;
+  --text:#1f2937;
+  --muted:#6b7280;
+}
+
+*{
+  box-sizing:border-box;
+  font-family:Inter,system-ui,-apple-system,BlinkMacSystemFont,sans-serif;
+}
+
+body{
+  margin:0;
+  padding:32px;
+  background:linear-gradient(135deg,#eef4ff,#dbeafe);
+  color:var(--text);
+}
+
+.container{
+  width: 96%;
+  margin:auto;
+  background:#fff;
+  padding:28px;
+  border-radius:16px;
+  box-shadow:0 15px 40px rgba(0,0,0,.08);
+}
+
+h1{
+  margin:0 0 24px;
+  font-size:24px;
+  font-weight:700;
+  color:#1e3a8a;
+}
+
+table{
+  width:100%;
+  border-collapse:separate;
+  border-spacing:0;
+  font-size:14px;
+}
+
+thead th{
+  position:sticky;
+  top:0;
+  background:#f8fbff;
+  z-index:1;
+}
+
+th,td{
+  padding:14px 12px;
+  border-bottom:1px solid var(--border);
+  vertical-align:top;
+}
+
+th{
+  text-align:left;
+  font-weight:600;
+  color:#1e40af;
+}
+
+tbody tr:hover{
+  background:#f9fbff;
+}
+
+input,textarea{
+  width:100%;
+  padding:10px 12px;
+  border-radius:10px;
+  border:1px solid #c7d2fe;
+  font-size:13px;
+}
+
+input:focus,textarea:focus{
+  outline:none;
+  border-color:var(--primary);
+  box-shadow:0 0 0 2px rgba(37,99,235,.15);
+}
+
+textarea{
+  resize:vertical;
+  min-height:110px;
+}
+
+button{
+  padding:8px 14px;
+  border-radius:10px;
+  border:none;
+  font-size:13px;
+  font-weight:600;
+  cursor:pointer;
+  transition:.2s;
+}
+
+.primary{
+  background:var(--primary);
+  color:#fff;
+}
+.primary:hover{background:var(--primary-dark)}
+
+.secondary{
+  background:var(--secondary);
+  color:#111827;
+}
+.secondary:hover{background:#d1d5db}
+
+.actions-col{
+  min-width:150px;
+}
+
+.actions-col button{
+  width:100%;
+  margin-bottom:8px;
+}
+
+.thumb{
+  max-width:150px;
+  border-radius:10px;
+  display:none;
+}
+
+.no-image{
+  font-size:12px;
+  color:var(--muted);
+}
+
+.success{
+  font-size:12px;
+  color:#15803d;
+  margin-top:6px;
+  display:none;
+}
+
+.progress{
+  height:6px;
+  background:#e5e7eb;
+  border-radius:6px;
+  overflow:hidden;
+  margin-top:8px;
+  display:none;
+}
+
+.progress span{
+  display:block;
+  height:100%;
+  width:0%;
+  background:linear-gradient(90deg,#2563eb,#60a5fa);
+  animation:load 1.4s infinite;
+}
+
+@keyframes load{
+  from{width:0%}to{width:100%}
+}
+
+.toolbar{
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  margin-top:20px;
+}
+
+.toolbar-left button{
+  margin-right:10px;
+}
+
+.toolbar-right button{
+  margin-left:10px;
+}
+</style>
+</head>
+
+<body>
+<div class="container">
+<h1>Suarathailand Content Generator</h1>
+
+<table>
+<thead>
+<tr>
+<th width="50">No</th>
+<th width="260">URL</th>
+<th width="240">Judul</th>
+<th width="180">Gambar</th>
+<th>Generated Caption</th>
+<th width="160">Action</th>
+</tr>
+</thead>
+<tbody id="tbody"></tbody>
+</table>
+
+<div class="toolbar">
+  <div class="toolbar-left">
+    <button class="secondary" onclick="addRow()">Tambah URL</button>
+  </div>
+  <div class="toolbar-right">
+    <button class="secondary" onclick="resetTable()">Reset</button>
+    <button class="secondary" onclick="setAllLimit()">Set all to 350 chars</button>
+    <button class="primary" onclick="generateAll()">Generate All</button>
+  </div>
+</div>
+</div>
+
+<script>
+let no=0;
+
+function addRow(){
+  no++;
+  const tr=document.createElement("tr");
+  tr.innerHTML=`
+<td>${no}</td>
+<td><input type="url" placeholder="https://suarathailand.com/..."></td>
+<td>
+  <textarea class="title-text"></textarea>
+  <button class="secondary" onclick="copyText(this)">Copy Judul</button>
+  <div class="success">Teks telah dicopy</div>
+</td>
+<td>
+  <img class="thumb">
+  <div class="no-image">Tidak ada gambar</div>
+</td>
+<td>
+  <textarea class="caption-text"></textarea>
+  <button class="secondary" onclick="copyText(this)">Copy Caption</button>
+  <div class="success">Teks telah dicopy</div>
+  <div class="progress"><span></span></div>
+</td>
+<td class="actions-col">
+  <button class="primary" onclick="generateRow(this)">Generate</button>
+  <button class="secondary" onclick="limitText(this)">Set to 350 chars</button>
+</td>`;
+  document.getElementById("tbody").appendChild(tr);
+}
+
+async function generateRow(btn){
+  const row=btn.closest("tr");
+  const url=row.querySelector('input[type=url]').value;
+  if(!url) return;
+
+  const title=row.querySelector(".title-text");
+  const caption=row.querySelector(".caption-text");
+  const img=row.querySelector(".thumb");
+  const noImg=row.querySelector(".no-image");
+  const progress=row.querySelector(".progress");
+
+  progress.style.display="block";
+
+  try{
+    const res=await fetch("https://api.allorigins.win/raw?url="+encodeURIComponent(url));
+    const html=await res.text();
+    const doc=new DOMParser().parseFromString(html,"text/html");
+
+    const h1=doc.querySelector("h1.entry-title");
+    title.value=h1?h1.textContent.trim():"";
+
+    const imgEl=doc.querySelector(".post-thumb img");
+    if(imgEl){
+      const raw=imgEl.getAttribute("src");
+      const finalSrc=resolveImageUrl(raw,url);
+      img.src=finalSrc;
+      img.style.display="block";
+      noImg.style.display="none";
+    }else{
+      img.style.display="none";
+      noImg.style.display="block";
+    }
+
+    const ps=doc.querySelectorAll(".entry-content p");
+    let text="";
+    for(let p of ps){
+      const t=p.textContent.trim();
+      if(t){text=t;break;}
+    }
+    caption.value=text+"\n\nBaca selengkapnya: "+url;
+
+  }catch{
+    caption.value="Gagal mengambil konten";
+  }finally{
+    progress.style.display="none";
+  }
+}
+
+function generateAll(){
+  document.querySelectorAll(".actions-col .primary")
+    .forEach(b=>generateRow(b));
+}
+
+function resolveImageUrl(src,pageUrl){
+  if(!src) return "";
+  if(src.startsWith("http")) return src;
+  return new URL(pageUrl).origin+src;
+}
+
+function copyText(btn){
+  const input=btn.previousElementSibling;
+  input.select();
+  document.execCommand("copy");
+  btn.nextElementSibling.style.display="block";
+}
+
+function limitText(btn){
+  const row = btn.closest("tr");
+  const ta = row.querySelector(".caption-text");
+  if(!ta || !ta.value) return;
+
+  const parts = ta.value.split("\n\nBaca selengkapnya:");
+  if(parts.length < 2) return;
+
+  let paragraph = parts[0].trim();
+  const urlPart = "\n\nBaca selengkapnya:" + parts[1];
+
+  const maxTotal = 350;
+  const allowedParagraphLength = maxTotal - urlPart.length - 3;
+
+  if(paragraph.length > allowedParagraphLength){
+    paragraph = paragraph.slice(0, allowedParagraphLength) + "...";
+    ta.value = paragraph + urlPart;
+  }
+}
+
+
+function setAllLimit(){
+  document.querySelectorAll(".caption-text").forEach(ta=>{
+    if(!ta.value) return;
+
+    const parts = ta.value.split("\n\nBaca selengkapnya:");
+    if(parts.length < 2) return;
+
+    let paragraph = parts[0].trim();
+    const urlPart = "\n\nBaca selengkapnya:" + parts[1];
+
+    const maxTotal = 350;
+    const allowedParagraphLength = maxTotal - urlPart.length - 3;
+
+    if(paragraph.length > allowedParagraphLength){
+      paragraph = paragraph.slice(0, allowedParagraphLength) + "...";
+      ta.value = paragraph + urlPart;
+    }
+  });
+}
+
+
+function resetTable(){
+  if(!confirm("Yakin ingin reset semua data?")) return;
+  document.getElementById("tbody").innerHTML="";
+  no=0;
+  addRow();
+}
+
+addRow();
+</script>
+</body>
+</html>
