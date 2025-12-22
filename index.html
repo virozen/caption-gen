@@ -2,290 +2,361 @@
 <html lang="id">
 <head>
 <meta charset="UTF-8">
-<title>Suarathailand Caption Generator</title>
+<title>Suarathailand Content Generator</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
 
 <style>
-* { box-sizing: border-box; }
-
-body {
-  font-family: Arial, sans-serif;
-  background: linear-gradient(135deg, #e3f2fd, #bbdefb);
-  padding: 40px;
+:root{
+  --primary:#2563eb;
+  --primary-dark:#1e40af;
+  --secondary:#e5e7eb;
+  --bg:#f4f8ff;
+  --border:#e2e8f0;
+  --text:#1f2937;
+  --muted:#6b7280;
 }
 
-.container {
-  max-width: 1100px;
-  margin: auto;
-  background: #ffffff;
-  border-radius: 16px;
-  padding: 24px;
-  box-shadow: 0 10px 30px rgba(0,0,0,0.08);
+*{
+  box-sizing:border-box;
+  font-family:Inter,system-ui,-apple-system,BlinkMacSystemFont,sans-serif;
 }
 
-h1 {
-  text-align: center;
-  margin-bottom: 24px;
-  color: #0d47a1;
+body{
+  margin:0;
+  padding:32px;
+  background:linear-gradient(135deg,#eef4ff,#dbeafe);
+  color:var(--text);
 }
 
-table {
-  width: 100%;
-  border-collapse: collapse;
+.container{
+  max-width:1400px;
+  margin:auto;
+  background:#fff;
+  padding:28px;
+  border-radius:16px;
+  box-shadow:0 15px 40px rgba(0,0,0,.08);
 }
 
-th, td {
-  border-bottom: 1px solid #e0e0e0;
-  padding: 10px;
-  vertical-align: top;
+h1{
+  margin:0 0 24px;
+  font-size:24px;
+  font-weight:700;
+  color:#1e3a8a;
 }
 
-th {
-  background: #e3f2fd;
-  color: #0d47a1;
+table{
+  width:100%;
+  border-collapse:separate;
+  border-spacing:0;
+  font-size:14px;
 }
 
-input[type="url"],
-textarea {
-  width: 100%;
-  padding: 8px;
-  border-radius: 8px;
-  border: 1px solid #cfd8dc;
-  font-size: 14px;
+thead th{
+  position:sticky;
+  top:0;
+  background:#f8fbff;
+  z-index:1;
 }
 
-textarea {
-  resize: vertical;
-  min-height: 110px;
+th,td{
+  padding:14px 12px;
+  border-bottom:1px solid var(--border);
+  vertical-align:top;
 }
 
-button {
-  padding: 8px 14px;
-  border-radius: 8px;
-  border: none;
-  cursor: pointer;
-  font-size: 14px;
-  transition: all 0.2s ease;
+th{
+  text-align:left;
+  font-weight:600;
+  color:#1e40af;
 }
 
-.primary { background: #1976d2; color: #fff; }
-.secondary { background: #90caf9; color: #0d47a1; }
-.danger { background: #ef5350; color: #fff; }
-
-.primary:hover { background: #1565c0; transform: translateY(-2px); }
-.secondary:hover { background: #64b5f6; transform: translateY(-2px); }
-.danger:hover { background: #d32f2f; transform: translateY(-2px); }
-
-.row-actions button {
-  display: block;
-  width: 100%;
-  margin-bottom: 6px;
+tbody tr:hover{
+  background:#f9fbff;
 }
 
-.copy-success {
-  margin-top: 6px;
-  font-size: 13px;
-  color: #2e7d32;
-  display: none;
+input,textarea{
+  width:100%;
+  padding:10px 12px;
+  border-radius:10px;
+  border:1px solid #c7d2fe;
+  font-size:13px;
 }
 
-.actions {
-  margin-top: 16px;
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
+input:focus,textarea:focus{
+  outline:none;
+  border-color:var(--primary);
+  box-shadow:0 0 0 2px rgba(37,99,235,.15);
 }
 
-/* Progress Bar */
-.progress-wrapper {
-  margin-top: 6px;
-  height: 6px;
-  background: #e3f2fd;
-  border-radius: 6px;
-  overflow: hidden;
-  display: none;
+textarea{
+  resize:vertical;
+  min-height:110px;
 }
 
-.progress-bar {
-  height: 100%;
-  width: 40%;
-  background: linear-gradient(90deg, #64b5f6, #1976d2, #64b5f6);
-  animation: progressMove 1.2s infinite;
+button{
+  padding:8px 14px;
+  border-radius:10px;
+  border:none;
+  font-size:13px;
+  font-weight:600;
+  cursor:pointer;
+  transition:.2s;
 }
 
-@keyframes progressMove {
-  0% { transform: translateX(-100%); }
-  100% { transform: translateX(250%); }
+.primary{
+  background:var(--primary);
+  color:#fff;
+}
+.primary:hover{background:var(--primary-dark)}
+
+.secondary{
+  background:var(--secondary);
+  color:#111827;
+}
+.secondary:hover{background:#d1d5db}
+
+.actions-col{
+  min-width:150px;
+}
+
+.actions-col button{
+  width:100%;
+  margin-bottom:8px;
+}
+
+.thumb{
+  max-width:150px;
+  border-radius:10px;
+  display:none;
+}
+
+.no-image{
+  font-size:12px;
+  color:var(--muted);
+}
+
+.success{
+  font-size:12px;
+  color:#15803d;
+  margin-top:6px;
+  display:none;
+}
+
+.progress{
+  height:6px;
+  background:#e5e7eb;
+  border-radius:6px;
+  overflow:hidden;
+  margin-top:8px;
+  display:none;
+}
+
+.progress span{
+  display:block;
+  height:100%;
+  width:0%;
+  background:linear-gradient(90deg,#2563eb,#60a5fa);
+  animation:load 1.4s infinite;
+}
+
+@keyframes load{
+  from{width:0%}to{width:100%}
+}
+
+.toolbar{
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  margin-top:20px;
+}
+
+.toolbar-left button{
+  margin-right:10px;
+}
+
+.toolbar-right button{
+  margin-left:10px;
 }
 </style>
 </head>
 
 <body>
-
 <div class="container">
-  <h1>Suarathailand Caption Generator</h1>
+<h1>Suarathailand Content Generator</h1>
 
-  <table id="urlTable">
-    <thead>
-      <tr>
-        <th style="width:50px;">No</th>
-        <th style="width:280px;">URL</th>
-        <th>Generated Caption</th>
-        <th style="width:190px;">Action</th>
-      </tr>
-    </thead>
-    <tbody>
-      <tr>
-        <td>1</td>
-        <td><input type="url" placeholder="Masukkan URL artikel"></td>
-        <td>
-          <textarea placeholder="Output akan muncul di sini"></textarea>
+<table>
+<thead>
+<tr>
+<th width="50">No</th>
+<th width="260">URL</th>
+<th width="240">Judul</th>
+<th width="180">Gambar</th>
+<th>Generated Caption</th>
+<th width="160">Action</th>
+</tr>
+</thead>
+<tbody id="tbody"></tbody>
+</table>
 
-          <div class="progress-wrapper">
-            <div class="progress-bar"></div>
-          </div>
-
-          <div class="copy-success">Teks telah dicopy</div>
-        </td>
-        <td class="row-actions">
-          <button class="secondary" onclick="generateRow(this)">Generate</button>
-          <button class="secondary" onclick="copyRow(this)">Copy</button>
-          <button class="secondary" onclick="limit350(this)">Max 350 Chars</button>
-        </td>
-      </tr>
-    </tbody>
-  </table>
-
-  <div class="actions">
+<div class="toolbar">
+  <div class="toolbar-left">
     <button class="secondary" onclick="addRow()">Tambah URL</button>
-    <div>
-      <button class="danger" onclick="resetTable()">Reset</button>
-      <button class="secondary" onclick="setAllTo350()">Set All to 350 Chars</button>
-      <button class="primary" onclick="generateAll()">Generate All</button>
-    </div>
   </div>
+  <div class="toolbar-right">
+    <button class="secondary" onclick="resetTable()">Reset</button>
+    <button class="secondary" onclick="setAllLimit()">Set all to 350 chars</button>
+    <button class="primary" onclick="generateAll()">Generate All</button>
+  </div>
+</div>
 </div>
 
 <script>
-const MAX_CHARS = 350;
+let no=0;
 
-function addRow() {
-  const tbody = document.querySelector("#urlTable tbody");
-  const rowCount = tbody.rows.length + 1;
-
-  const row = document.createElement("tr");
-  row.innerHTML = `
-    <td>${rowCount}</td>
-    <td><input type="url" placeholder="Masukkan URL artikel"></td>
-    <td>
-      <textarea placeholder="Output akan muncul di sini"></textarea>
-
-      <div class="progress-wrapper">
-        <div class="progress-bar"></div>
-      </div>
-
-      <div class="copy-success">Teks telah dicopy</div>
-    </td>
-    <td class="row-actions">
-      <button class="secondary" onclick="generateRow(this)">Generate</button>
-      <button class="secondary" onclick="copyRow(this)">Copy</button>
-      <button class="secondary" onclick="limit350(this)">Max 350 Chars</button>
-    </td>
-  `;
-  tbody.appendChild(row);
+function addRow(){
+  no++;
+  const tr=document.createElement("tr");
+  tr.innerHTML=`
+<td>${no}</td>
+<td><input type="url" placeholder="https://suarathailand.com/..."></td>
+<td>
+  <textarea class="title-text"></textarea>
+  <button class="secondary" onclick="copyText(this)">Copy Judul</button>
+  <div class="success">Teks telah dicopy</div>
+</td>
+<td>
+  <img class="thumb">
+  <div class="no-image">Tidak ada gambar</div>
+</td>
+<td>
+  <textarea class="caption-text"></textarea>
+  <button class="secondary" onclick="copyText(this)">Copy Caption</button>
+  <div class="success">Teks telah dicopy</div>
+  <div class="progress"><span></span></div>
+</td>
+<td class="actions-col">
+  <button class="primary" onclick="generateRow(this)">Generate</button>
+  <button class="secondary" onclick="limitText(this)">Max 350 Chars</button>
+</td>`;
+  document.getElementById("tbody").appendChild(tr);
 }
 
-function resetTable() {
-  if (!confirm("Apakah kamu yakin ingin mereset tabel?\nSemua data akan dihapus.")) return;
-  document.querySelector("#urlTable tbody").innerHTML = "";
+async function generateRow(btn){
+  const row=btn.closest("tr");
+  const url=row.querySelector('input[type=url]').value;
+  if(!url) return;
+
+  const title=row.querySelector(".title-text");
+  const caption=row.querySelector(".caption-text");
+  const img=row.querySelector(".thumb");
+  const noImg=row.querySelector(".no-image");
+  const progress=row.querySelector(".progress");
+
+  progress.style.display="block";
+
+  try{
+    const res=await fetch("https://api.allorigins.win/raw?url="+encodeURIComponent(url));
+    const html=await res.text();
+    const doc=new DOMParser().parseFromString(html,"text/html");
+
+    const h1=doc.querySelector("h1.entry-title");
+    title.value=h1?h1.textContent.trim():"";
+
+    const imgEl=doc.querySelector(".post-thumb img");
+    if(imgEl){
+      const raw=imgEl.getAttribute("src");
+      const finalSrc=resolveImageUrl(raw,url);
+      img.src=finalSrc;
+      img.style.display="block";
+      noImg.style.display="none";
+    }else{
+      img.style.display="none";
+      noImg.style.display="block";
+    }
+
+    const ps=doc.querySelectorAll(".entry-content p");
+    let text="";
+    for(let p of ps){
+      const t=p.textContent.trim();
+      if(t){text=t;break;}
+    }
+    caption.value=text+"\n\nBaca selengkapnya: "+url;
+
+  }catch{
+    caption.value="Gagal mengambil konten";
+  }finally{
+    progress.style.display="none";
+  }
+}
+
+function generateAll(){
+  document.querySelectorAll(".actions-col .primary")
+    .forEach(b=>generateRow(b));
+}
+
+function resolveImageUrl(src,pageUrl){
+  if(!src) return "";
+  if(src.startsWith("http")) return src;
+  return new URL(pageUrl).origin+src;
+}
+
+function copyText(btn){
+  const input=btn.previousElementSibling;
+  input.select();
+  document.execCommand("copy");
+  btn.nextElementSibling.style.display="block";
+}
+
+function limitText(btn){
+  const row = btn.closest("tr");
+  const ta = row.querySelector(".caption-text");
+  if(!ta || !ta.value) return;
+
+  const parts = ta.value.split("\n\nBaca selengkapnya:");
+  if(parts.length < 2) return;
+
+  let paragraph = parts[0].trim();
+  const urlPart = "\n\nBaca selengkapnya:" + parts[1];
+
+  const maxTotal = 350;
+  const allowedParagraphLength = maxTotal - urlPart.length - 3;
+
+  if(paragraph.length > allowedParagraphLength){
+    paragraph = paragraph.slice(0, allowedParagraphLength) + "...";
+    ta.value = paragraph + urlPart;
+  }
+}
+
+
+function setAllLimit(){
+  document.querySelectorAll(".caption-text").forEach(ta=>{
+    if(!ta.value) return;
+
+    const parts = ta.value.split("\n\nBaca selengkapnya:");
+    if(parts.length < 2) return;
+
+    let paragraph = parts[0].trim();
+    const urlPart = "\n\nBaca selengkapnya:" + parts[1];
+
+    const maxTotal = 350;
+    const allowedParagraphLength = maxTotal - urlPart.length - 3;
+
+    if(paragraph.length > allowedParagraphLength){
+      paragraph = paragraph.slice(0, allowedParagraphLength) + "...";
+      ta.value = paragraph + urlPart;
+    }
+  });
+}
+
+
+function resetTable(){
+  if(!confirm("Yakin ingin reset semua data?")) return;
+  document.getElementById("tbody").innerHTML="";
+  no=0;
   addRow();
 }
 
-async function generateRow(btn) {
-  const row = btn.closest("tr");
-  const input = row.querySelector("input");
-  const textarea = row.querySelector("textarea");
-  const progress = row.querySelector(".progress-wrapper");
-  const url = input.value.trim();
-
-  if (!url) return;
-
-  progress.style.display = "block";
-  textarea.value = "Memuat...";
-
-  try {
-    const proxy = "https://api.allorigins.win/raw?url=" + encodeURIComponent(url);
-    const res = await fetch(proxy);
-    const html = await res.text();
-
-    const doc = new DOMParser().parseFromString(html, "text/html");
-    const content = doc.querySelector(".entry-content");
-
-    if (!content) {
-      textarea.value = "Konten tidak ditemukan";
-      return;
-    }
-
-    const ps = content.querySelectorAll("p");
-    let text = "";
-
-    for (let p of ps) {
-      const t = p.textContent.replace(/\s+/g, " ").trim();
-      if (t) { text = t; break; }
-    }
-
-    textarea.value = text + "\n\nBaca selengkapnya: " + url;
-
-  } catch {
-    textarea.value = "Gagal mengambil artikel";
-  } finally {
-    progress.style.display = "none";
-  }
-}
-
-async function generateAll() {
-  const rows = document.querySelectorAll("#urlTable tbody tr");
-  for (let row of rows) {
-    await generateRow(row.querySelector(".row-actions button"));
-  }
-}
-
-function copyRow(btn) {
-  const row = btn.closest("tr");
-  const textarea = row.querySelector("textarea");
-  const label = row.querySelector(".copy-success");
-
-  if (!textarea.value.trim()) return;
-
-  navigator.clipboard.writeText(textarea.value).then(() => {
-    label.style.display = "block";
-  });
-}
-
-function limit350(btn) {
-  applyLimit(btn.closest("tr").querySelector("textarea"));
-}
-
-function setAllTo350() {
-  document.querySelectorAll("#urlTable textarea").forEach(textarea => {
-    applyLimit(textarea);
-  });
-}
-
-function applyLimit(textarea) {
-  const text = textarea.value;
-  if (!text || text.length <= MAX_CHARS) return;
-
-  const parts = text.split("\n\nBaca selengkapnya:");
-  if (parts.length < 2) return;
-
-  const urlPart = "\n\nBaca selengkapnya:" + parts[1];
-  const maxParagraphLength = MAX_CHARS - urlPart.length - 3;
-  if (maxParagraphLength <= 0) return;
-
-  textarea.value =
-    parts[0].substring(0, maxParagraphLength).trim() + "..." + urlPart;
-}
+addRow();
 </script>
-
 </body>
 </html>
