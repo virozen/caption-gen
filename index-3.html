@@ -156,7 +156,7 @@
 <body>
 
     <div class="container">
-        <h1>Suarathailand Generator</h1>
+        <h1>Suarathailand Content Generator</h1>
 
         <div class="table-wrapper">
             <table id="contentTable">
@@ -174,7 +174,7 @@
         </div>
 
         <div class="btn-group">
-            <button class="btn-add" onclick="addRow()">+ Tambah Baris Baru</button>
+            <button class="btn-add" onclick="addRow()">+ Tambah URL Baru</button>
             <div style="display: flex; gap: 12px;">
                 <button class="btn-reset" onclick="resetTable()">Reset Data</button>
                 <button class="btn-all" onclick="setAllTo350()">Set all to 350 chars</button>
@@ -222,7 +222,7 @@
                 </td>
                 <td>
                     <button class="btn-gen" id="btn-gen-${rowCount}" onclick="generateRow(${rowCount})">Generate</button>
-                    <button class="btn-350" onclick="limitTo350(${rowCount})">Limit 350</button>
+                    <button class="btn-350" onclick="limitTo350(${rowCount})">Set to 350 chars</button>
                     <button id="dl-${rowCount}" style="display:none; background: var(--primary); color:white; width:100%; font-size:11px; padding:8px; border-radius:8px;" onclick="downloadImage(${rowCount})">Unduh JPG</button>
                 </td>
             `;
