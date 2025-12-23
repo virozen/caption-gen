@@ -316,7 +316,7 @@
                     ctx.clearRect(0, 0, canvas.width, canvas.height);
                     ctx.drawImage(cachedTemplate, 0, 0, 1080, 1350);
                     
-                    const tx = 75, ty = 430, tw = 930, th = 680;
+                    const tx = 75, ty = 230, tw = 930, th = 680;
                     const imgRatio = newsImg.width / newsImg.height;
                     const targetRatio = tw / th;
                     let sx, sy, sw, sh;
@@ -335,8 +335,8 @@
 
                     ctx.drawImage(newsImg, sx, sy, sw, sh, tx, ty, tw, th);
                     ctx.fillStyle = "#1a3a5f"; 
-                    ctx.font = "600 54px Poppins";
-                    wrapText(ctx, title, 75, 220, 930, 75);
+                    ctx.font = "600 48px Poppins";
+                    wrapText(ctx, title, 75, 1000, 930, 75);
                     
                     const previewBox = document.getElementById(`preview-box-${id}`);
                     previewBox.innerHTML = `<img src="${canvas.toDataURL('image/jpeg', 0.9)}" class="canvas-preview" onclick="downloadImage(${id})">`;
